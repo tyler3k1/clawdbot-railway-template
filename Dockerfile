@@ -20,9 +20,12 @@ RUN corepack enable
 
 WORKDIR /openclaw
 
-# Pin to a known-good ref (tag/branch). Override in Railway template settings if needed.
+# Pin to a known-good ref (tag/branch). Override in Railway service variables if needed.
 # Using a released tag avoids build breakage when `main` temporarily references unpublished packages.
-ARG OPENCLAW_GIT_REF=v2026.4.5
+# v2026.4.x had an upstream bug (anthropic-transport-stream.ts imports @anthropic-ai/sdk without
+# declaring it in package.json); v2026.5.x fixed this. v2026.5.12 is the current stable per
+# https://docs.openclaw.ai/install/updating.
+ARG OPENCLAW_GIT_REF=v2026.5.12
 RUN git clone --depth 1 --branch "${OPENCLAW_GIT_REF}" https://github.com/openclaw/openclaw.git .
 
 # Patch: relax version requirements for packages that may reference unpublished versions.
