@@ -33,6 +33,13 @@ RUN set -eux; \
     sed -i -E 's/"openclaw"[[:space:]]*:[[:space:]]*"workspace:[^"]+"/"openclaw": "*"/g' "$f"; \
   done
 
+# Workaround for upstream npm registry returning metadata without the "time" field
+# for some packages (e.g. @earendil-works/pi-ai, a direct dep of extensions/amazon-bedrock
+# as of openclaw v2026.5.12). Without this, pnpm install fails with
+# ERR_PNPM_MISSING_TIME. resolution-mode=highest tells pnpm to always pick the
+# highest version without consulting time metadata.
+RUN echo 'resolution-mode=highest' > .npmrc
+
 RUN pnpm install --no-frozen-lockfile
 RUN pnpm build
 ENV OPENCLAW_PREFER_PNPM=1
